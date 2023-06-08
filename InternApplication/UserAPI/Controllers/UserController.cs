@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UserAPI.Interfaces;
@@ -30,6 +31,7 @@ namespace UserAPI.Controllers
         }
 
 
+        
         [HttpPost]
         public async Task<ActionResult<UserDTO>?> Login([FromBody] UserDTO user)
         {
@@ -41,7 +43,8 @@ namespace UserAPI.Controllers
             return BadRequest("Unable to login at this moment");
         }
 
-        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
         public async Task<ActionResult<UserDTO>?> ChangeStatus([FromBody] UserDTO user)
         {
             var result = await _manageUser.ChangeStatus(user);
