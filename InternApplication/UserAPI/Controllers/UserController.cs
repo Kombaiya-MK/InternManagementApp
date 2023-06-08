@@ -43,12 +43,34 @@ namespace UserAPI.Controllers
             return BadRequest("Unable to login at this moment");
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPut]
-        public async Task<ActionResult<UserDTO>?> ChangeStatus([FromBody] UserDTO user)
+        public async Task<ActionResult<UserDTO>?> ChangeStatus([FromBody] User user)
         {
             var result = await _manageUser.ChangeStatus(user);
             if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest("Unable to Change Status");
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<UserDTO>?> ChangePassword([FromBody] PasswordDTO password)
+        {
+            bool result = await _manageUser.ChangePassword(password);
+            if(result)
+            {
+                return Ok("Password Changed Successfully");
+            }
+            return BadRequest("Unable to Change Status");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ICollection<Intern>>?> GetAllInterns()
+        {
+            var result = await _manageUser.GetInterns();
+            if (result.Count > 1)
             {
                 return Ok(result);
             }

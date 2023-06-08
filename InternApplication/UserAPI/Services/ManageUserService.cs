@@ -5,6 +5,7 @@ using UserAPI.Models.DTO;
 using UserAPI.Models;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace InterUserManagementAPI.Services
 {
@@ -25,9 +26,8 @@ namespace InterUserManagementAPI.Services
             _passwordService = passwordService;
             _tokenService = tokenService;
         }
-        public async Task<UserDTO> ChangeStatus(UserDTO userDTO)
+        public async Task<User> ChangeStatus(User user)
         {
-            var user = await _userRepo.Get(userDTO.UserId);
             try
             {
                 var updatedUser = await _userRepo.Update(user);
@@ -37,9 +37,18 @@ namespace InterUserManagementAPI.Services
                 Debug.WriteLine(ex.Message);
                 return null;
             }
-            return userDTO;
+            return user;
         }
 
+        public async Task<ICollection<User>> GetUsers()
+        {
+            return await _userRepo.GetAll();
+        }
+
+        public async Task<ICollection<Intern>> GetInterns()
+        {
+            return await _internRepo.GetAll();
+        }
         public async Task<UserDTO> Login(UserDTO user)
         {
             var userData = await _userRepo.Get(user.UserId);
@@ -60,6 +69,19 @@ namespace InterUserManagementAPI.Services
             return user;
         }
 
+        public bool validatePassword(string currentPassword , User user)
+        {
+            bool status = true;
+            var hmac = new HMACSHA512(user.PasswordKey);
+            var userPass = hmac.ComputeHash(Encoding.UTF8.GetBytes(currentPassword));
+            for (int i = 0; i < userPass.Length; i++)
+            {
+                if (userPass[i] != user.PasswordHash[i])
+                    status = false;
+            }
+            return status;
+             
+        }
         public async Task<UserDTO> Register(InternDTO intern)
         {
 
@@ -79,7 +101,27 @@ namespace InterUserManagementAPI.Services
                 user.Token = _tokenService.GenerateToken(user);
             }
             return user;
+        }
 
+
+        
+        public async Task<bool> ChangePassword(PasswordDTO passwordDTO)
+        {
+            bool status = false;
+            User user = await _userRepo.Get(passwordDTO.id);
+            if(validatePassword(passwordDTO.currentPassword , user))
+            {
+                var hmac = new HMACSHA512();
+                user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(passwordDTO.updatedPassword ?? "1234"));
+                user.PasswordKey = hmac.Key;
+            }
+            var result = await _userRepo.Update(user);
+            if(result != null)
+            {
+                return true;
+            }
+            return status;
+            
         }
     }
 }
