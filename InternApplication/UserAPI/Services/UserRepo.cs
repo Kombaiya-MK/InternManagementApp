@@ -4,12 +4,17 @@ using UserAPI.Models;
 
 namespace UserAPI.Services
 {
-    public class USerRepo : IRepo<User, int>
+    public class UserRepo : IRepo<User, int>
     {
         private readonly UserContext _context;
-        private readonly ILogger<USerRepo> _logger;
+        private readonly ILogger<UserRepo> _logger;
 
-        public USerRepo(UserContext context, ILogger<USerRepo> logger)
+
+        public UserRepo()
+        {
+            
+        }
+        public UserRepo(UserContext context, ILogger<UserRepo> logger)
         {
             _context = context;
             _logger = logger;

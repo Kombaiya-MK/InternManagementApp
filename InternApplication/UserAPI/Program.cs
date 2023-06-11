@@ -53,7 +53,7 @@ namespace UserAPI
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("UserConn"));
             });
-            builder.Services.AddScoped<IRepo<User , int>, USerRepo>();
+            builder.Services.AddScoped<IRepo<User , int>, UserRepo>();
             builder.Services.AddScoped<IRepo<Intern, int>, InternRepo>();
             builder.Services.AddScoped<IGeneratePassword, GeneratePasswordService>();
             builder.Services.AddScoped<IGenerateToken, GenerateTokenService>();

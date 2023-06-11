@@ -65,7 +65,7 @@ namespace UserAPI.Controllers
             }
             return BadRequest("Unable to Change Status");
         }
-
+            
         [HttpGet]
         public async Task<ActionResult<ICollection<Intern>>?> GetAllInterns()
         {
